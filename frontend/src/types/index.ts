@@ -46,6 +46,50 @@ export interface Department {
   created_at: string;
 }
 
+export type MaintenanceStatus = "REPORTED" | "IN_PROGRESS" | "RESOLVED";
+
+export interface MaintenanceLog {
+  id: number;
+  asset: number;
+  asset_tag: string;
+  reported_by: number;
+  reported_by_name: string;
+  issue_description: string;
+  status: MaintenanceStatus;
+  resolution_notes: string;
+  invoice_image_url: string;
+  reported_at: string;
+  resolved_at: string | null;
+}
+
+export type AssignmentStatus = "ACTIVE" | "RETURNED";
+
+export interface Assignment {
+  id: number;
+  asset: number;
+  asset_tag: string;
+  assigned_to: number;
+  assigned_to_name: string;
+  assigned_by: number | null;
+  department: number | null;
+  status: AssignmentStatus;
+  notes: string;
+  assigned_at: string;
+  returned_at: string | null;
+}
+
+export interface Printer {
+  id: number;
+  name: string;
+  printer_type: "A4" | "THERMAL";
+  connection_info: string;
+  is_default: boolean;
+}
+
+export interface ReportRow {
+  [key: string]: string | number | null;
+}
+
 export interface Paginated<T> {
   count: number;
   next: string | null;

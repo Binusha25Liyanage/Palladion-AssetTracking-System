@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-on-surface font-body-sm antialiased;
+  }
+  ::selection {
+    @apply bg-primary-container/40;
+  }
+}
+
+/* Material Symbols Outlined baseline (matches the Stitch AI UI export) */
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Recurring "ledger" motifs from the design system */
+.tear-line {
+  border-bottom: 1px dashed #4a4a50;
+}
+.asset-card {
+  border-left: 3px solid #a02334;
+}
+
+/* Simulated bar-chart segments (Dashboard status trend) */
+.chart-bar-primary {
+  background-color: #a02334;
+}
+.chart-bar-secondary {
+  background-color: #584141;
+}
+.chart-bar-tertiary {
+  background-color: #353438;
+}
+
+/* Monospace for every asset tag / serial / audit ID, per the design system */
+.font-tag {
+  @apply font-data-label tracking-tight;
+}
+
+/* Industrial scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #131316;
+}
+::-webkit-scrollbar-thumb {
+  background: #353438;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #49494d;
+}

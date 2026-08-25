@@ -2,7 +2,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import AssetCategoryViewSet, AssetImageViewSet, AssetViewSet
 
-router = DefaultRouter()
+router = DefaultRouter(trailing_slash=False)
 router.register("categories", AssetCategoryViewSet, basename="category")
 router.register("assets", AssetViewSet, basename="asset")
 router.register("asset-images", AssetImageViewSet, basename="asset-image")

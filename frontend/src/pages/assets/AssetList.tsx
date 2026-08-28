@@ -35,10 +35,19 @@ export default function AssetList() {
             className="w-72 bg-transparent font-body-sm text-body-sm text-on-surface outline-none placeholder:text-on-surface-variant"
           />
         </div>
-        <button className="flex items-center gap-2 rounded border border-outline-variant bg-surface-container px-4 py-2 font-data-label text-data-label uppercase text-on-surface transition-colors hover:bg-surface-container-highest">
-          <span className="material-symbols-outlined text-[18px]">download</span>
-          Export
-        </button>
+        <div className="flex items-center gap-3">
+          <button className="flex items-center gap-2 rounded border border-outline-variant bg-surface-container px-4 py-2 font-data-label text-data-label uppercase text-on-surface transition-colors hover:bg-surface-container-highest">
+            <span className="material-symbols-outlined text-[18px]">download</span>
+            Export
+          </button>
+          <Link
+            to="/assets/new"
+            className="flex items-center gap-2 rounded bg-primary-container px-4 py-2 font-data-label text-data-label uppercase text-on-primary-container transition-opacity hover:bg-opacity-90"
+          >
+            <span className="material-symbols-outlined text-[18px]">add</span>
+            New Asset
+          </Link>
+        </div>
       </div>
 
       <div>

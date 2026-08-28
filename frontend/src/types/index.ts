@@ -17,6 +17,12 @@ export interface User {
 
 export type AssetStatus = "ACTIVE" | "IN_REPAIR" | "RETIRED" | "DISPOSED";
 
+export interface AssetCategory {
+  id: number;
+  name: string;
+  code: string;
+}
+
 export interface Asset {
   id: number;
   asset_tag: string;

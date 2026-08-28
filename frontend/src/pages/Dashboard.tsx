@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import { api } from "../lib/api";
 import { AssetStatus } from "../types";
@@ -36,10 +37,13 @@ export default function Dashboard() {
             Overview of system operations and asset health.
           </p>
         </div>
-        <button className="flex items-center gap-2 rounded bg-primary-container px-4 py-2 font-data-label text-data-label uppercase text-on-primary-container transition-opacity hover:bg-opacity-90">
+        <Link
+          to="/assets/new"
+          className="flex items-center gap-2 rounded bg-primary-container px-4 py-2 font-data-label text-data-label uppercase text-on-primary-container transition-opacity hover:bg-opacity-90"
+        >
           <span className="material-symbols-outlined text-[18px]">add</span>
           New Asset
-        </button>
+        </Link>
       </div>
 
       {/* Stat cards */}

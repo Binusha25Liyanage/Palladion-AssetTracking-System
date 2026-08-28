@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "apps.valuations",
     "apps.configuration",
     "apps.audit",
+    "apps.documents",
     "apps.dashboard",
     "apps.reports",
 ]

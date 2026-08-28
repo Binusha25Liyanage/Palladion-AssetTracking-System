@@ -50,6 +50,17 @@ export default function Assignments() {
     loadAll();
   }
 
+  async function downloadDoc(path: string, filename: string) {
+    const res = await api.get(path, { responseType: "blob" });
+    const url = URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-end justify-between">
@@ -152,14 +163,36 @@ export default function Assignments() {
                   {a.returned_at ? new Date(a.returned_at).toLocaleString() : "—"}
                 </td>
                 <td className="p-3">
-                  {a.status === "ACTIVE" && (
+                  <div className="flex flex-wrap gap-2">
                     <button
-                      onClick={() => handleReturn(a)}
+                      onClick={() => downloadDoc(`/assignments/${a.id}/dispatch-note`, `dispatch-note-${a.asset_tag}.pdf`)}
                       className="font-data-label text-data-label text-primary hover:underline"
                     >
-                      Return
+                      Dispatch Note
                     </button>
-                  )}
+                    <button
+                      onClick={() => downloadDoc(`/assignments/${a.id}/agreement`, `agreement-${a.asset_tag}.pdf`)}
+                      className="font-data-label text-data-label text-primary hover:underline"
+                    >
+                      Agreement
+                    </button>
+                    {a.status === "RETURNED" && (
+                      <button
+                        onClick={() => downloadDoc(`/assignments/${a.id}/return-note`, `return-note-${a.asset_tag}.pdf`)}
+                        className="font-data-label text-data-label text-primary hover:underline"
+                      >
+                        Return Note
+                      </button>
+                    )}
+                    {a.status === "ACTIVE" && (
+                      <button
+                        onClick={() => handleReturn(a)}
+                        className="font-data-label text-data-label text-error hover:underline"
+                      >
+                        Return
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

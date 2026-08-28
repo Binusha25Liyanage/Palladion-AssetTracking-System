@@ -6,6 +6,7 @@ import PrinterSettings from "./pages/admin/PrinterSettings";
 import UserManagement from "./pages/admin/UserManagement";
 import AssetDetail from "./pages/assets/AssetDetail";
 import AssetList from "./pages/assets/AssetList";
+import AssetQrCode from "./pages/assets/AssetQrCode";
 import AssetRegister from "./pages/assets/AssetRegister";
 import Assignments from "./pages/assignments/Assignments";
 import Login from "./pages/auth/Login";
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/assets" element={<AssetList />} />
         <Route path="/assets/new" element={<AssetRegister />} />
         <Route path="/assets/:id" element={<AssetDetail />} />
+        <Route path="/assets/:id/qr" element={<AssetQrCode />} />
         <Route path="/maintenance" element={<Maintenance />} />
         <Route path="/assignments" element={<Assignments />} />
         <Route path="/reports" element={<Reports />} />

@@ -10,6 +10,7 @@ api_v1_patterns = [
     path("", include("apps.valuations.urls")),         # /assets/:id/valuations, /depreciation
     path("", include("apps.configuration.urls")),      # /settings, /printers
     path("", include("apps.audit.urls")),               # /audit-logs
+    path("", include("apps.documents.urls")),            # QR codes + PDF documents
     path("", include("apps.dashboard.urls")),          # /dashboard/summary
     path("", include("apps.reports.urls")),            # /reports/*
 ]

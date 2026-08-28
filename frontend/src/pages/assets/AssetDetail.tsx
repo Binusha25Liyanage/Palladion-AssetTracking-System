@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import StatusBadge from "../../components/StatusBadge";
 import { api } from "../../lib/api";
@@ -21,15 +21,24 @@ export default function AssetDetail() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="font-data-label text-data-label uppercase text-on-surface-variant">
-          Asset List &gt; {asset.category_name}
-        </p>
-        <div className="mt-1 flex items-center gap-3">
-          <h1 className="font-headline-lg text-headline-lg text-on-surface">{asset.name}</h1>
-          <StatusBadge status={asset.status} />
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="font-data-label text-data-label uppercase text-on-surface-variant">
+            Asset List &gt; {asset.category_name}
+          </p>
+          <div className="mt-1 flex items-center gap-3">
+            <h1 className="font-headline-lg text-headline-lg text-on-surface">{asset.name}</h1>
+            <StatusBadge status={asset.status} />
+          </div>
+          <p className="font-asset-id text-asset-id text-on-surface-variant">{asset.asset_tag}</p>
         </div>
-        <p className="font-asset-id text-asset-id text-on-surface-variant">{asset.asset_tag}</p>
+        <Link
+          to={`/assets/${asset.id}/qr`}
+          className="flex items-center gap-2 rounded border border-outline-variant bg-surface-container px-4 py-2 font-data-label text-data-label uppercase text-on-surface transition-colors hover:bg-surface-container-highest"
+        >
+          <span className="material-symbols-outlined text-[18px]">qr_code_2</span>
+          QR Code
+        </Link>
       </div>
 
       {/* Value strip */}

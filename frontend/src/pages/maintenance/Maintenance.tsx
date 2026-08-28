@@ -49,6 +49,17 @@ export default function Maintenance() {
     loadLogs();
   }
 
+  async function downloadReport(log: MaintenanceLog) {
+    const res = await api.get(`/maintenance-logs/${log.id}/report`, { responseType: "blob" });
+    const url = URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `maintenance-report-${log.asset_tag}-${log.id}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-end justify-between">
@@ -138,7 +149,7 @@ export default function Maintenance() {
                   {new Date(log.reported_at).toLocaleString()}
                 </td>
                 <td className="p-3">
-                  {log.status !== "RESOLVED" && (
+                  {log.status !== "RESOLVED" ? (
                     <div className="flex gap-2">
                       {log.status === "REPORTED" && (
                         <button
@@ -155,6 +166,13 @@ export default function Maintenance() {
                         Resolve
                       </button>
                     </div>
+                  ) : (
+                    <button
+                      onClick={() => downloadReport(log)}
+                      className="font-data-label text-data-label text-primary hover:underline"
+                    >
+                      Download Report
+                    </button>
                   )}
                 </td>
               </tr>

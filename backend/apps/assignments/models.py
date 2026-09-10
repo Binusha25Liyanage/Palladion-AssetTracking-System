@@ -8,6 +8,9 @@ class Assignment(models.Model):
         ACTIVE = "ACTIVE", "Active"
         RETURNED = "RETURNED", "Returned"
 
+    organization = models.ForeignKey(
+        "organizations.Organization", on_delete=models.PROTECT, related_name="assignments"
+    )
     asset = models.ForeignKey("assets.Asset", on_delete=models.CASCADE, related_name="assignments")
     assigned_to = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="assignments_received"

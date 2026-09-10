@@ -17,13 +17,16 @@ class AssetValuationListCreateView(APIView):
         return [IsAuthenticatedAnyRole()]
 
     def get(self, request, asset_id):
-        valuations = MarketValuation.objects.filter(asset_id=asset_id)
+        valuations = MarketValuation.objects.filter(asset_id=asset_id, organization=request.user.organization)
         return Response(MarketValuationSerializer(valuations, many=True).data)
 
     def post(self, request, asset_id):
+        asset = Asset.objects.filter(pk=asset_id, organization=request.user.organization).first()
+        if not asset:
+            return Response({"detail": "Asset not found."}, status=404)
         serializer = MarketValuationSerializer(data={**request.data, "asset": asset_id})
         serializer.is_valid(raise_exception=True)
-        serializer.save(estimated_by=request.user)
+        serializer.save(estimated_by=request.user, organization=request.user.organization)
         return Response(serializer.data, status=201)
 
 
@@ -31,9 +34,8 @@ class AssetDepreciationView(APIView):
     permission_classes = [IsAuthenticatedAnyRole]
 
     def get(self, request, asset_id):
-        try:
-            asset = Asset.objects.get(pk=asset_id)
-        except Asset.DoesNotExist:
+        asset = Asset.objects.filter(pk=asset_id, organization=request.user.organization).first()
+        if not asset:
             return Response({"detail": "Asset not found."}, status=404)
         latest_valuation = asset.valuations.first()
         return Response(

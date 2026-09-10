@@ -21,7 +21,7 @@ class MaintenanceLogViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        qs = MaintenanceLog.objects.select_related("asset", "reported_by")
+        qs = MaintenanceLog.objects.filter(organization=user.organization).select_related("asset", "reported_by")
         if user.is_admin:
             return qs
         if user.is_dept_head:
@@ -29,7 +29,7 @@ class MaintenanceLogViewSet(viewsets.ModelViewSet):
         return qs.filter(reported_by=user)
 
     def perform_create(self, serializer):
-        serializer.save(reported_by=self.request.user)
+        serializer.save(reported_by=self.request.user, organization=self.request.user.organization)
 
 
 class MaintenanceScheduleViewSet(viewsets.ModelViewSet):
@@ -38,7 +38,7 @@ class MaintenanceScheduleViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        qs = MaintenanceSchedule.objects.select_related("asset")
+        qs = MaintenanceSchedule.objects.filter(organization=user.organization).select_related("asset")
         if user.is_admin:
             return qs
         return qs.filter(asset__department=user.department)
@@ -49,4 +49,4 @@ class MaintenanceScheduleViewSet(viewsets.ModelViewSet):
         return [IsAdminOrDeptHead()]
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
+        serializer.save(created_by=self.request.user, organization=self.request.user.organization)

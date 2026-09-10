@@ -8,17 +8,32 @@ from .serializers import ChangePasswordSerializer, UserSerializer
 
 
 class LoginView(TokenObtainPairView):
-    """POST /api/v1/auth/login -> {access, refresh, user}"""
+    """POST /api/v1/auth/login {email, password, organization: <slug>} -> {access, refresh, user}
+
+    The `organization` slug is required and checked against the account's
+    actual organization *before* credentials are validated — logging in as a
+    real PALLADION user while the "Lakmee Holdings" organization is selected
+    is rejected here, not left to queryset filtering to quietly hide later.
+    """
 
     def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        if response.status_code == 200:
-            email = request.data.get("email") or request.data.get("username")
-            from .models import User
+        org_slug = request.data.get("organization")
+        if not org_slug:
+            return Response({"detail": "Please select an organization."}, status=status.HTTP_400_BAD_REQUEST)
 
-            user = User.objects.filter(email=email).first()
-            if user:
-                response.data["user"] = UserSerializer(user).data
+        email = request.data.get("email") or request.data.get("username")
+        from .models import User
+
+        user = User.objects.filter(email=email).select_related("organization").first()
+        if user and user.organization.slug != org_slug:
+            return Response(
+                {"detail": "This account doesn't belong to the selected organization."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == 200 and user:
+            response.data["user"] = UserSerializer(user).data
         return response
 
 

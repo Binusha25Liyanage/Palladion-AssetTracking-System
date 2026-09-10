@@ -4,9 +4,13 @@ from simple_history.models import HistoricalRecords
 
 
 class Department(models.Model):
-    """A company department, e.g. IT, Sales, Warehouse."""
+    """A company department, e.g. IT, Sales, Warehouse. Scoped per organization —
+    "IT" can exist independently in both PALLADION and Lakmee Holdings."""
 
-    name = models.CharField(max_length=100, unique=True)
+    organization = models.ForeignKey(
+        "organizations.Organization", on_delete=models.PROTECT, related_name="departments"
+    )
+    name = models.CharField(max_length=100)
     head = models.ForeignKey(
         "accounts.User",
         null=True,
@@ -20,19 +24,25 @@ class Department(models.Model):
 
     class Meta:
         ordering = ["name"]
+        unique_together = [["organization", "name"]]
 
     def __str__(self):
         return self.name
 
 
 class User(AbstractUser):
-    """Custom user with the three system roles."""
+    """Custom user with the three system roles. Belongs to exactly one
+    organization — that's what a login determines and what every queryset
+    scopes against."""
 
     class Role(models.TextChoices):
         ADMIN = "ADMIN", "Admin"
         DEPT_HEAD = "DEPT_HEAD", "Department Head"
         EMPLOYEE = "EMPLOYEE", "Employee"
 
+    organization = models.ForeignKey(
+        "organizations.Organization", on_delete=models.PROTECT, related_name="users"
+    )
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.EMPLOYEE)
     department = models.ForeignKey(

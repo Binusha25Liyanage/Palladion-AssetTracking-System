@@ -15,3 +15,13 @@ class AssignmentSerializer(serializers.ModelSerializer):
             "assigned_at", "returned_at",
         ]
         read_only_fields = ["assigned_by", "status", "returned_at", "assigned_at"]
+
+    def validate(self, attrs):
+        user = self.context["request"].user
+        asset = attrs.get("asset")
+        assigned_to = attrs.get("assigned_to")
+        if asset and asset.organization_id != user.organization_id:
+            raise serializers.ValidationError("That asset doesn't belong to your organization.")
+        if assigned_to and assigned_to.organization_id != user.organization_id:
+            raise serializers.ValidationError("That employee doesn't belong to your organization.")
+        return attrs

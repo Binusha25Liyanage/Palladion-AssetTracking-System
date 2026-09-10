@@ -13,7 +13,6 @@ from .serializers import (
 
 
 class AssetCategoryViewSet(viewsets.ModelViewSet):
-    queryset = AssetCategory.objects.all()
     serializer_class = AssetCategorySerializer
 
     def get_permissions(self):
@@ -24,6 +23,12 @@ class AssetCategoryViewSet(viewsets.ModelViewSet):
         from apps.accounts.permissions import IsAdmin
 
         return [IsAdmin()]
+
+    def get_queryset(self):
+        return AssetCategory.objects.filter(organization=self.request.user.organization)
+
+    def perform_create(self, serializer):
+        serializer.save(organization=self.request.user.organization)
 
 
 class AssetViewSet(viewsets.ModelViewSet):
@@ -38,13 +43,20 @@ class AssetViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        qs = Asset.objects.select_related("category", "department", "current_holder")
+        # Organization scoping always applies first — a Lakmee Holdings user
+        # can never see a PALLADION asset regardless of role.
+        qs = Asset.objects.filter(organization=user.organization).select_related(
+            "category", "department", "current_holder"
+        )
         if user.is_admin:
             return qs
         if user.is_dept_head:
             return qs.filter(department=user.department)
         # Employee: only assets currently assigned to them
         return qs.filter(current_holder=user)
+
+    def perform_create(self, serializer):
+        serializer.save(organization=self.request.user.organization)
 
     @action(detail=False, methods=["get"], url_path="by-tag/(?P<tag>[^/.]+)")
     def by_tag(self, request, tag=None):
@@ -80,13 +92,17 @@ class AssetImageViewSet(viewsets.ModelViewSet):
     once credentials are configured (see settings.R2_*).
     """
 
-    queryset = AssetImage.objects.all()
     serializer_class = AssetImageSerializer
 
     def get_permissions(self):
         from apps.accounts.permissions import IsAdminOrDeptHead
 
         return [IsAdminOrDeptHead()]
+
+    def get_queryset(self):
+        # Scoped via the parent asset's organization — AssetImage has no
+        # organization field of its own.
+        return AssetImage.objects.filter(asset__organization=self.request.user.organization)
 
     @action(detail=True, methods=["patch"], url_path="set-primary")
     def set_primary(self, request, pk=None):

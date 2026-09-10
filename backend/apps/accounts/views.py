@@ -8,7 +8,6 @@ from .serializers import DepartmentSerializer, UserCreateSerializer, UserSeriali
 
 
 class DepartmentViewSet(viewsets.ModelViewSet):
-    queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
     search_fields = ["name"]
 
@@ -19,19 +18,31 @@ class DepartmentViewSet(viewsets.ModelViewSet):
             return [IsAuthenticatedAnyRole()]
         return [IsAdmin()]
 
+    def get_queryset(self):
+        return Department.objects.filter(organization=self.request.user.organization)
+
+    def perform_create(self, serializer):
+        serializer.save(organization=self.request.user.organization)
+
 
 class UserViewSet(viewsets.ModelViewSet):
-    """Admin-only user management. GET /users, POST /users, PATCH /users/:id, etc."""
+    """Admin-only user management, scoped to the admin's own organization.
+    GET /users, POST /users, PATCH /users/:id, etc."""
 
-    queryset = User.objects.all().order_by("first_name")
     permission_classes = [IsAdmin]
     search_fields = ["first_name", "last_name", "email", "username"]
     filterset_fields = ["role", "department", "is_active_employee"]
+
+    def get_queryset(self):
+        return User.objects.filter(organization=self.request.user.organization).order_by("first_name")
 
     def get_serializer_class(self):
         if self.request.method == "POST":
             return UserCreateSerializer
         return UserSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(organization=self.request.user.organization)
 
     @action(detail=True, methods=["patch"])
     def deactivate(self, request, pk=None):

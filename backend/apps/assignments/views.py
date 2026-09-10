@@ -16,13 +16,15 @@ class AssignmentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        qs = Assignment.objects.select_related("asset", "assigned_to", "department")
+        qs = Assignment.objects.filter(organization=user.organization).select_related(
+            "asset", "assigned_to", "department"
+        )
         if user.is_admin:
             return qs
         return qs.filter(department=user.department)
 
     def perform_create(self, serializer):
-        assignment = serializer.save(assigned_by=self.request.user)
+        assignment = serializer.save(assigned_by=self.request.user, organization=self.request.user.organization)
         asset = assignment.asset
         asset.current_holder = assignment.assigned_to
         asset.department = assignment.department or asset.department

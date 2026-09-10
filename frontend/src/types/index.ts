@@ -1,5 +1,13 @@
 export type Role = "ADMIN" | "DEPT_HEAD" | "EMPLOYEE";
 
+export interface Organization {
+  id: number;
+  name: string;
+  slug: string;
+  primary_color: string;
+  logo_filename: string;
+}
+
 export interface User {
   id: number;
   username: string;
@@ -13,6 +21,7 @@ export interface User {
   is_active_employee: boolean;
   is_active: boolean;
   date_joined: string;
+  organization: Organization;
 }
 
 export type AssetStatus = "ACTIVE" | "IN_REPAIR" | "RETIRED" | "DISPOSED";

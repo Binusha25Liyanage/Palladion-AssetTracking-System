@@ -8,6 +8,9 @@ class MaintenanceLog(models.Model):
         IN_PROGRESS = "IN_PROGRESS", "In Progress"
         RESOLVED = "RESOLVED", "Resolved"
 
+    organization = models.ForeignKey(
+        "organizations.Organization", on_delete=models.PROTECT, related_name="maintenance_logs"
+    )
     asset = models.ForeignKey("assets.Asset", on_delete=models.CASCADE, related_name="maintenance_logs")
     reported_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="reported_issues")
     issue_description = models.TextField()
@@ -26,6 +29,9 @@ class MaintenanceLog(models.Model):
 
 
 class MaintenanceSchedule(models.Model):
+    organization = models.ForeignKey(
+        "organizations.Organization", on_delete=models.PROTECT, related_name="maintenance_schedules"
+    )
     asset = models.ForeignKey("assets.Asset", on_delete=models.CASCADE, related_name="maintenance_schedules")
     description = models.CharField(max_length=200)
     frequency_days = models.PositiveIntegerField(help_text="Recurring interval in days")

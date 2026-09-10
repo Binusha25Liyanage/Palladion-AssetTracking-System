@@ -16,6 +16,12 @@ class MaintenanceLogSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["reported_by", "reported_at"]
 
+    def validate_asset(self, asset):
+        user = self.context["request"].user
+        if asset.organization_id != user.organization_id:
+            raise serializers.ValidationError("That asset doesn't belong to your organization.")
+        return asset
+
 
 class MaintenanceScheduleSerializer(serializers.ModelSerializer):
     asset_tag = serializers.CharField(source="asset.asset_tag", read_only=True)
@@ -24,3 +30,9 @@ class MaintenanceScheduleSerializer(serializers.ModelSerializer):
         model = MaintenanceSchedule
         fields = ["id", "asset", "asset_tag", "description", "frequency_days", "next_due_date", "created_by"]
         read_only_fields = ["created_by"]
+
+    def validate_asset(self, asset):
+        user = self.context["request"].user
+        if asset.organization_id != user.organization_id:
+            raise serializers.ValidationError("That asset doesn't belong to your organization.")
+        return asset

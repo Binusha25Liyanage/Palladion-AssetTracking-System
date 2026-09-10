@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "django_filters",
     "simple_history",
     # local apps
+    "apps.organizations",
     "apps.accounts",
     "apps.assets",
     "apps.assignments",
@@ -148,4 +149,5 @@ R2_BUCKET_NAME = os.getenv("R2_BUCKET_NAME", "lakmee-assettrack")
 R2_PUBLIC_URL = os.getenv("R2_PUBLIC_URL", "")
 
 # --- App-specific ---------------------------------------------------------------
-ASSET_TAG_PREFIX = "LKM"
+# Asset tag prefixes are now per-organization (see Organization.tag_prefix),
+# not a single global setting.

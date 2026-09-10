@@ -8,6 +8,9 @@ class AuditLog(models.Model):
         UPDATE = "UPDATE", "Update"
         DELETE = "DELETE", "Delete"
 
+    organization = models.ForeignKey(
+        "organizations.Organization", on_delete=models.CASCADE, related_name="audit_logs"
+    )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name="audit_entries")
     action = models.CharField(max_length=20, choices=Action.choices)
     model_name = models.CharField(max_length=100)

@@ -19,11 +19,11 @@ from .models import AuditLog
 AUDITED_MODELS = (Asset, Assignment, MaintenanceLog)
 
 
-def _audit_enabled():
+def _audit_enabled(organization):
     from apps.configuration.models import SystemSettings
 
     try:
-        return SystemSettings.load().audit_log_enabled
+        return SystemSettings.load(organization).audit_log_enabled
     except Exception:
         # Table may not exist yet during initial `migrate` — fail open (no crash),
         # audit rows just won't be written until settings exist.
@@ -31,9 +31,11 @@ def _audit_enabled():
 
 
 def _log(action, instance, user=None):
-    if not _audit_enabled():
+    organization = instance.organization
+    if not _audit_enabled(organization):
         return
     AuditLog.objects.create(
+        organization=organization,
         user=user,
         action=action,
         model_name=instance.__class__.__name__,

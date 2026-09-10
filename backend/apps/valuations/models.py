@@ -3,6 +3,9 @@ from django.db import models
 
 
 class MarketValuation(models.Model):
+    organization = models.ForeignKey(
+        "organizations.Organization", on_delete=models.PROTECT, related_name="valuations"
+    )
     asset = models.ForeignKey("assets.Asset", on_delete=models.CASCADE, related_name="valuations")
     value = models.DecimalField(max_digits=12, decimal_places=2)
     estimated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)

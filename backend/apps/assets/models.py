@@ -4,14 +4,20 @@ from simple_history.models import HistoricalRecords
 
 
 class AssetCategory(models.Model):
-    """IT Equipment / Vehicle / Machinery — drives the asset tag prefix."""
+    """IT Equipment / Vehicle / Machinery — drives the asset tag. Scoped per
+    organization: both PALLADION and Lakmee Holdings have their own "IT" (IT)
+    category, independently."""
 
+    organization = models.ForeignKey(
+        "organizations.Organization", on_delete=models.PROTECT, related_name="asset_categories"
+    )
     name = models.CharField(max_length=100)
-    code = models.CharField(max_length=5, unique=True, help_text="Short code used in the asset tag, e.g. IT, VH, MC")
+    code = models.CharField(max_length=5, help_text="Short code used in the asset tag, e.g. IT, VH, MC")
 
     class Meta:
         verbose_name_plural = "asset categories"
         ordering = ["name"]
+        unique_together = [["organization", "code"]]
 
     def __str__(self):
         return f"{self.name} ({self.code})"
@@ -24,7 +30,10 @@ class Asset(models.Model):
         RETIRED = "RETIRED", "Retired"
         DISPOSED = "DISPOSED", "Disposed"
 
-    asset_tag = models.CharField(max_length=30, unique=True, editable=False)
+    organization = models.ForeignKey(
+        "organizations.Organization", on_delete=models.PROTECT, related_name="assets"
+    )
+    asset_tag = models.CharField(max_length=30, editable=False)
     name = models.CharField(max_length=200)
     category = models.ForeignKey(AssetCategory, on_delete=models.PROTECT, related_name="assets")
     description = models.TextField(blank=True)
@@ -51,6 +60,7 @@ class Asset(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        unique_together = [["organization", "asset_tag"]]
 
     def __str__(self):
         return f"{self.asset_tag} — {self.name}"
@@ -61,11 +71,9 @@ class Asset(models.Model):
         super().save(*args, **kwargs)
 
     def _generate_asset_tag(self):
-        from django.conf import settings as dj_settings
-
-        prefix = getattr(dj_settings, "ASSET_TAG_PREFIX", "LKM")
+        prefix = self.organization.tag_prefix
         last = (
-            Asset.objects.filter(category=self.category)
+            Asset.objects.filter(organization=self.organization, category=self.category)
             .order_by("-id")
             .values_list("asset_tag", flat=True)
             .first()
@@ -75,7 +83,7 @@ class Asset(models.Model):
             try:
                 next_number = int(last.rsplit("-", 1)[-1]) + 1
             except (ValueError, IndexError):
-                next_number = Asset.objects.filter(category=self.category).count() + 1
+                next_number = Asset.objects.filter(organization=self.organization, category=self.category).count() + 1
         return f"{prefix}-{self.category.code}-{next_number:04d}"
 
     @property

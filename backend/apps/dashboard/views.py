@@ -14,8 +14,8 @@ class DashboardSummaryView(APIView):
 
     def get(self, request):
         user = request.user
-        assets = Asset.objects.all()
-        schedules = MaintenanceSchedule.objects.all()
+        assets = Asset.objects.filter(organization=user.organization)
+        schedules = MaintenanceSchedule.objects.filter(organization=user.organization)
 
         if user.is_dept_head:
             assets = assets.filter(department=user.department)

@@ -3,6 +3,7 @@ from django.urls import include, path
 
 api_v1_patterns = [
     path("auth/", include("apps.accounts.auth_urls")),
+    path("", include("apps.organizations.urls")),      # /organizations (public, for the login picker)
     path("", include("apps.accounts.urls")),          # /users, /departments
     path("", include("apps.assets.urls")),             # /categories, /assets
     path("", include("apps.assignments.urls")),        # /assignments

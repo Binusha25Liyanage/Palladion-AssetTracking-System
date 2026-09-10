@@ -13,7 +13,7 @@ class BaseReportView(APIView):
     permission_classes = [IsAdminOrDeptHead]
 
     def scoped_assets(self, request):
-        assets = Asset.objects.all()
+        assets = Asset.objects.filter(organization=request.user.organization)
         if request.user.is_dept_head:
             assets = assets.filter(department=request.user.department)
         return assets
@@ -60,7 +60,7 @@ class DepreciationSummaryReportView(APIView):
     permission_classes = [IsAdmin]
 
     def get(self, request):
-        assets = Asset.objects.exclude(purchase_value=None)
+        assets = Asset.objects.filter(organization=request.user.organization).exclude(purchase_value=None)
         rows = [
             {
                 "asset_tag": a.asset_tag,

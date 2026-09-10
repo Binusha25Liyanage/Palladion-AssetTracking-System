@@ -32,10 +32,16 @@ export default function Layout() {
       <nav className="fixed left-0 top-0 hidden h-screen w-64 flex-col border-r border-outline-variant bg-surface-container pb-4 pt-4 md:flex">
         <div className="mb-8 flex flex-col items-center px-margin">
           <div className="mb-4 h-16 w-16 overflow-hidden rounded-full border border-outline-variant bg-surface-variant">
-            <img src="/logo.png" alt="Palladion" className="h-full w-full object-cover" />
+            {user?.organization?.logo_filename && (
+              <img
+                src={`/${user.organization.logo_filename}`}
+                alt={user.organization.name}
+                className="h-full w-full object-cover"
+              />
+            )}
           </div>
           <div className="font-headline-md text-headline-md font-black uppercase tracking-wider text-on-surface">
-            Palladion
+            {user?.organization?.name}
           </div>
           <div className="font-data-label text-data-label text-on-surface-variant">Industrial Tracking</div>
         </div>
@@ -83,7 +89,7 @@ export default function Layout() {
         <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-outline-variant bg-surface px-margin">
           <div className="flex items-center gap-4">
             <div className="font-headline-md text-headline-md font-bold uppercase tracking-wider text-on-surface md:hidden">
-              Palladion
+              {user?.organization?.name}
             </div>
             {user?.department_name && (
               <div className="hidden items-center gap-2 rounded border border-outline-variant bg-surface-container px-3 py-1.5 md:flex">

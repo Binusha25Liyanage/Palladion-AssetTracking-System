@@ -14,15 +14,21 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     department_name = serializers.CharField(source="department.name", read_only=True, default="")
+    organization = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
             "id", "username", "email", "first_name", "last_name",
             "role", "department", "department_name", "phone",
-            "is_active_employee", "is_active", "date_joined",
+            "is_active_employee", "is_active", "date_joined", "organization",
         ]
         read_only_fields = ["date_joined"]
+
+    def get_organization(self, obj):
+        from apps.organizations.serializers import OrganizationSerializer
+
+        return OrganizationSerializer(obj.organization).data
 
 
 class UserCreateSerializer(serializers.ModelSerializer):

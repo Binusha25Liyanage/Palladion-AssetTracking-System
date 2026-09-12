@@ -2,9 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Theme system: two organizations, two looks, same components.
+  Every color Tailwind uses below resolves through a CSS variable, so
+  toggling the `theme-lakmee` class on <html> repaints the whole app
+  without any per-component conditional styling.
+
+  Applied by:
+  - Login.tsx, live, as the Organization dropdown changes (pre-auth preview)
+  - AuthContext, persistently, once the logged-in user's organization is known
+*/
+
+:root {
+  /* PALLADION (default) — dark industrial, Cherry Alloy Red / Ash / Mercury.
+     Values straight from the Stitch AI export. */
+  --color-background: 19 19 22; /* #131316 */
+  --color-surface: 19 19 22; /* #131316 */
+  --color-surface-bright: 57 57 60; /* #39393c */
+  --color-surface-variant: 53 52 56; /* #353438 */
+  --color-surface-container: 31 31 34; /* #1f1f22 */
+  --color-surface-container-low: 27 27 30; /* #1b1b1e */
+  --color-surface-container-high: 42 42 45; /* #2a2a2d */
+  --color-surface-container-highest: 53 52 56; /* #353438 */
+  --color-on-surface: 228 225 229; /* #e4e1e5 */
+  --color-on-surface-variant: 223 191 191; /* #dfbfbf */
+  --color-outline-variant: 88 65 65; /* #584141 */
+  --color-primary: 255 179 180; /* #ffb3b4 */
+  --color-primary-container: 160 35 52; /* #a02334 */
+  --color-on-primary-container: 255 183 184; /* #ffb7b8 */
+  --color-error: 255 180 171; /* #ffb4ab */
+  --color-error-container: 147 0 10; /* #93000a */
+
+  --font-headline: "IBM Plex Sans", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-data-label: "IBM Plex Sans", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+.theme-lakmee {
+  /* LAKMEE HOLDINGS — light corporate paper theme, sampled from the
+     company ID card (#D52126 family) and the Route Sales Report Builder
+     reference UI (cream background, deep maroon accents). */
+  --color-background: 252 249 244; /* #FCF9F4 */
+  --color-surface: 255 255 255; /* #FFFFFF */
+  --color-surface-bright: 255 255 255; /* #FFFFFF */
+  --color-surface-variant: 240 237 233; /* #F0EDE9 */
+  --color-surface-container: 240 237 233; /* #F0EDE9 */
+  --color-surface-container-low: 245 242 237; /* #F5F2ED */
+  --color-surface-container-high: 232 227 219; /* #E8E3DB */
+  --color-surface-container-highest: 224 218 207; /* #E0DACF */
+  --color-on-surface: 33 28 26; /* #211C1A */
+  --color-on-surface-variant: 97 94 89; /* #615E59 */
+  --color-outline-variant: 229 223 214; /* #E5DFD6 */
+  --color-primary: 122 46 51; /* #7A2E33 */
+  --color-primary-container: 93 24 30; /* #5D181E */
+  --color-on-primary-container: 255 255 255; /* #FFFFFF */
+  --color-error: 179 38 30; /* #B3261E */
+  --color-error-container: 249 222 220; /* #F9DEDC */
+
+  --font-headline: "Manrope", sans-serif;
+  --font-body: "Work Sans", sans-serif;
+  --font-data-label: "IBM Plex Sans", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
 @layer base {
   body {
     @apply bg-background text-on-surface font-body-sm antialiased;
+    transition: background-color 0.15s ease, color 0.15s ease;
   }
   ::selection {
     @apply bg-primary-container/40;
@@ -29,24 +94,26 @@
 
 /* Recurring "ledger" motifs from the design system */
 .tear-line {
-  border-bottom: 1px dashed #4a4a50;
+  border-bottom: 1px dashed rgb(var(--color-outline-variant));
 }
 .asset-card {
-  border-left: 3px solid #a02334;
+  border-left: 3px solid rgb(var(--color-primary-container));
 }
 
 /* Simulated bar-chart segments (Dashboard status trend) */
 .chart-bar-primary {
-  background-color: #a02334;
+  background-color: rgb(var(--color-primary-container));
 }
 .chart-bar-secondary {
-  background-color: #584141;
+  background-color: rgb(var(--color-outline-variant));
 }
 .chart-bar-tertiary {
-  background-color: #353438;
+  background-color: rgb(var(--color-surface-variant));
 }
 
-/* Monospace for every asset tag / serial / audit ID, per the design system */
+/* Monospace for every asset tag / serial / audit ID, per the design system.
+   Deliberately NOT themed — code-like values stay monospace regardless of
+   which organization's brand voice is active. */
 .font-tag {
   @apply font-data-label tracking-tight;
 }
@@ -57,12 +124,12 @@
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #131316;
+  background: rgb(var(--color-background));
 }
 ::-webkit-scrollbar-thumb {
-  background: #353438;
+  background: rgb(var(--color-surface-variant));
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #49494d;
+  background: rgb(var(--color-outline-variant));
 }

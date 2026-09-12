@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../context/AuthContext";
 import { api } from "../../lib/api";
+import { applyOrgTheme } from "../../lib/theme";
 import { Organization } from "../../types";
 
 export default function Login() {
@@ -24,6 +25,12 @@ export default function Login() {
   }, []);
 
   const selectedOrg = organizations.find((o) => o.slug === orgSlug);
+
+  useEffect(() => {
+    // Live preview: the login card itself should look like whichever
+    // organization is currently selected, before the person even logs in.
+    applyOrgTheme(orgSlug);
+  }, [orgSlug]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();

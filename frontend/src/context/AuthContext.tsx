@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
 import { api } from "../lib/api";
+import { applyOrgTheme } from "../lib/theme";
 import { User } from "../types";
 
 interface AuthContextValue {
@@ -24,7 +25,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     api
       .get<User>("/auth/me")
-      .then((res) => setUser(res.data))
+      .then((res) => {
+        setUser(res.data);
+        applyOrgTheme(res.data.organization?.slug);
+      })
       .catch(() => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
@@ -37,12 +41,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("access_token", data.access);
     localStorage.setItem("refresh_token", data.refresh);
     setUser(data.user);
+    applyOrgTheme(data.user.organization?.slug);
   }
 
   function logout() {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     setUser(null);
+    applyOrgTheme(undefined); // back to PALLADION default until the login screen re-applies a preview
   }
 
   return <AuthContext.Provider value={{ user, loading, login, logout }}>{children}</AuthContext.Provider>;
